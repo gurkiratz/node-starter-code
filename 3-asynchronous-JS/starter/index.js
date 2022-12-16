@@ -2,10 +2,10 @@ const fs = require('fs');
 const { resolve } = require('path');
 const superagent = require('superagent');
 
-const readFilePro = (file) => {
+const readFilePro = file => {
   return new Promise((resolve, reject) => {
     fs.readFile(file, (err, data) => {
-      if (err) reject('I could not find that file📑😐');
+      if (err) reject('I could not find that file😐');
       resolve(data);
     });
   });
@@ -13,8 +13,8 @@ const readFilePro = (file) => {
 
 const writeFilePro = (file, data) => {
   return new Promise((resolve, reject) => {
-    fs.writeFile(file, data, (err) => {
-      if (err) reject('Could not write file✍😐');
+    fs.writeFile(file, data, err => {
+      if (err) reject('Could not write file😐');
       resolve('Success');
     });
   });
@@ -34,9 +34,33 @@ const getDogPic = async () => {
     console.log('Random dog image saved to file!');
   } catch (err) {
     console.log(err);
+    throw err;
   }
+  return '2: READY';
 };
-getDogPic();
+
+(async () => {
+  try {
+    console.log('1: WIll get dog pics');
+    const x = await getDogPic();
+    console.log(x);
+    console.log('3: Done getting dog pics');
+  } catch (err) {
+    console.log('ERROR💣');
+  }
+})();
+
+/*
+console.log('1: WIll get dog pics');
+getDogPic()
+  .then(x => {
+    console.log(x);
+    console.log('3: Done getting dog pics');
+  })
+  .catch(err => {
+    console.log('ERROR💣');
+  });
+  */
 
 /*
 readFilePro(`${__dirname}/dog.txt`)
