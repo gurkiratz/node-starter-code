@@ -1,13 +1,19 @@
 /* eslint-disable node/no-unsupported-features/es-syntax */
-const express = require('express');
 const Tour = require('../models/tourModel');
+
+exports.aliasTopTours = (req, res, next) => {
+  req.query.limit = '5';
+  req.query.sort = '-ratingsAverage,-ratingsQuantity';
+  req.query.fields = 'name,ratingsAverage,summary,difficulty';
+  next();
+};
 
 exports.getAllTours = async (req, res) => {
   try {
     // BUILD QUERY
     // 1A) Filtering
     const queryObj = { ...req.query };
-    const excludedFields = ['page', 'limit', 'fields'];
+    const excludedFields = ['page', 'sort', 'limit', 'fields'];
     excludedFields.forEach(el => delete queryObj[el]);
 
     // 1B) Advanced filtering
