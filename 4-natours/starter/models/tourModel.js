@@ -36,6 +36,10 @@ const tourSchema = new mongoose.Schema(
     images: [String],
     createdAt: { type: Date, default: Date.now(), select: false },
     startDates: [Date],
+    secretTour: {
+      type: Boolean,
+      deafult: false,
+    },
   },
   opts
 );
@@ -55,6 +59,21 @@ tourSchema.pre('save', function (next) {
 //   console.log(doc.name, doc.slug);
 //   next();
 // });
+
+// QUERY MIDDLEWARE
+// tourSchema.pre('find', function (next) {
+tourSchema.pre(/^find/, function (next) {
+  this.find({ secretTour: { $ne: true } });
+
+  this.start = Date.now();
+  next();
+});
+
+tourSchema.post(/^find/, function (docs, next) {
+  console.log(`Query took ${Date.now() - this.start} milliseconds!`);
+  // console.log(docs);
+  next();
+});
 
 tourSchema.virtual('numberOfWeeks').get(function () {
   if (this.duration < 7) {
