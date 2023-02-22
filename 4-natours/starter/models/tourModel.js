@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const slugify = require('slugify');
 
 const opts = { toJSON: { virtuals: true }, toObject: { virtuals: true } };
 const tourSchema = new mongoose.Schema(
@@ -9,6 +10,7 @@ const tourSchema = new mongoose.Schema(
       unique: true,
       trim: true,
     },
+    slug: String,
     duration: { type: Number, required: [true, 'A tour must have a duration'] },
     maxGroupSize: {
       type: Number,
@@ -37,6 +39,22 @@ const tourSchema = new mongoose.Schema(
   },
   opts
 );
+
+// DOCUMENT MIDDLEWARE: runs  before .save() and .create()
+tourSchema.pre('save', function (next) {
+  this.slug = slugify(this.name, { lower: true });
+  next();
+});
+
+// tourSchema.pre('save', function (next) {
+//   console.log('this is pre');
+//   next();
+// });
+
+// tourSchema.post('save', function (doc, next) {
+//   console.log(doc.name, doc.slug);
+//   next();
+// });
 
 tourSchema.virtual('numberOfWeeks').get(function () {
   if (this.duration < 7) {
