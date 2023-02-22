@@ -75,6 +75,15 @@ tourSchema.post(/^find/, function (docs, next) {
   next();
 });
 
+// AGGREGATION MIDDLEWARE
+tourSchema.pre('aggregate', function (next) {
+  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+  // console.log(this.pipeline());
+  next();
+});
+
+// MODEL MIDDLEWARE NOT THAT IMPORTANT
+
 tourSchema.virtual('numberOfWeeks').get(function () {
   if (this.duration < 7) {
     return `${this.duration} days`;
