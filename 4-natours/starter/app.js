@@ -13,7 +13,7 @@ if (process.env.NODE_ENV === 'development') {
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static(`${__dirname}/public`));
+app.use(express.static(`${__dirname}/public`)); // To serve static files such as images, CSS files, and JavaScript files
 
 // app.use((req, res, next) => {
 //   console.log('Hello from the middleware 👋');
