@@ -40,6 +40,7 @@ app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
+// middleware errorController
 app.use(globalErrorHandler);
 
 // 4) START SERVER
