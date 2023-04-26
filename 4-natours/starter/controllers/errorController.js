@@ -5,6 +5,14 @@ const handleCastErrorDB = err => {
   return new AppError(message, 400);
 };
 
+const handleDuplicateFieldsDB = err => {
+  const pattern = /"([^"]*)"/g;
+  const value = err.message.match(pattern);
+  console.log(value);
+  const message = `Duplicate field value: ${value[0]}. Please use another value!`;
+  return new AppError(message, 400);
+};
+
 const sendErrorDev = (err, res) => {
   res.status(err.statusCode).json({
     status: err.status,
@@ -25,7 +33,6 @@ const sendErrorProd = (err, res) => {
     // Programming or other unknown error: don't leak error details
   } else {
     // 1) Log error
-    console.log(err.isOperational);
     console.error('ERROR:-', err);
 
     // 2) Send generic error
@@ -46,7 +53,8 @@ module.exports = (err, req, res, next) => {
     // eslint-disable-next-line node/no-unsupported-features/es-syntax
     let error = { ...err };
 
-    if (err.name === 'CastError') error = handleCastErrorDB(err);
+    if (err.name === 'CastError') error = handleCastErrorDB(err); // for invalid IDs
+    if (err.code === 11000) error = handleDuplicateFieldsDB(err); // for duplicate fields
 
     sendErrorProd(error, res);
   }
