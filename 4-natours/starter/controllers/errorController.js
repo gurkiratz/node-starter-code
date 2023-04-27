@@ -56,13 +56,12 @@ module.exports = (err, req, res, next) => {
   if (process.env.NODE_ENV === 'development') {
     sendErrorDev(err, res);
   } else if (process.env.NODE_ENV === 'production') {
-    // eslint-disable-next-line node/no-unsupported-features/es-syntax
-    let error = { ...err };
+    let error = Object.assign(err);
 
-    if (err.name === 'CastError') error = handleCastErrorDB(err); // for invalid IDs
-    if (err.code === 11000) error = handleDuplicateFieldsDB(err); // for duplicate fields
-    if (err.name === 'ValidationError') error = handleValidationErrorDB(err); // for validation errors
-
+    if (error.name === 'CastError') error = handleCastErrorDB(error); // for invalid IDs
+    if (error.code === 11000) error = handleDuplicateFieldsDB(error); // for duplicate fields
+    if (error.name === 'ValidationError')
+      error = handleValidationErrorDB(error); // for validation errors
     sendErrorProd(error, res);
   }
 };
