@@ -40,6 +40,7 @@ const userSchema = new mongoose.Schema({
   passwordResetExpires: Date,
 });
 
+// -----Hashing password using bcrypt middleware---------
 userSchema.pre('save', async function (next) {
   // Only run this function is password was actually modified
   if (!this.isModified('password')) return next();
@@ -49,6 +50,14 @@ userSchema.pre('save', async function (next) {
 
   // Delete the passwordConfirm field
   this.passwordConfirm = undefined;
+  next();
+});
+
+// ----Issuing password change date middleware--------
+userSchema.pre('save', function (next) {
+  if (!this.isModified('password') || this.isNew) return next();
+
+  this.passwordChangedAt = Date.now() - 1000;
   next();
 });
 
