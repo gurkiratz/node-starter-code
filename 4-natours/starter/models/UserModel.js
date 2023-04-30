@@ -42,7 +42,7 @@ const userSchema = new mongoose.Schema({
 
 // -----Hashing password using bcrypt middleware---------
 userSchema.pre('save', async function (next) {
-  // Only run this function is password was actually modified
+  // Only run this function if password was actually modified
   if (!this.isModified('password')) return next();
 
   // Hash the password with cost (salt) of 12
