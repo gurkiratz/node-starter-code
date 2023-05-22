@@ -43,6 +43,8 @@ const userSchema = new mongoose.Schema({
     default: true,
     select: false,
   },
+  failedLoginAttempts: { type: Number, default: 0 },
+  lockedUntil: Date,
 });
 
 // -----Hashing password using bcrypt middleware---------

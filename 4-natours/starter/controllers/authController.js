@@ -50,11 +50,34 @@ exports.login = catchAsync(async (req, res, next) => {
   // 2) Check if user exists && password is correct
   const user = await User.findOne({ email }).select('+password');
 
-  if (!user || !(await user.correctPassword(password, user.password))) {
+  if (!user) {
+    return next(new AppError('Incorrect email or password', 401));
+  }
+
+  if (user.lockedUntil && user.lockedUntil > new Date()) {
+    // Account is locked
+    const remainingTime = Math.ceil((user.lockedUntil - new Date()) / 1000);
+    return next(
+      new AppError(`Account is locked for ${remainingTime} seconds`, 403)
+    );
+  }
+
+  if (!(await user.correctPassword(password, user.password))) {
+    user.failedLoginAttempts++;
+
+    if (user.failedLoginAttempts >= 5) {
+      // Lock the account
+      user.lockedUntil = new Date(new Date().getTime() + 30 * 60 * 1000); // Lock for 30 minutes
+    }
+
+    await user.save({ validateBeforeSave: false });
+
     return next(new AppError('Incorrect email or password', 401));
   }
 
   // 3) If everything is ok, send token to client
+  user.failedLoginAttempts = 0;
+  await user.save({ validateBeforeSave: false });
   createSendToken(user, 200, res);
 });
 
