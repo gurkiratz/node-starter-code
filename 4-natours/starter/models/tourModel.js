@@ -35,6 +35,10 @@ const tourSchema = new mongoose.Schema(
       max: [5, 'Rating must be below 5.0'],
     },
     ratingsQuantity: { type: Number, default: 0 },
+    price: {
+      type: Number,
+      required: [true, 'A tour must have a price']
+    },
     priceDiscount: {
       type: Number,
       validate: {
